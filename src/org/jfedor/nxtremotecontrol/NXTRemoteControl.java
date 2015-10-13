@@ -155,12 +155,10 @@ public class NXTRemoteControl extends Activity implements OnSharedPreferenceChan
             lmod = l;
             rmod = r;
         }
-        
+
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            //Log.i("NXT", "onTouch event: " + Integer.toString(event.getAction()));
             int action = event.getAction();
-            //if ((action == MotionEvent.ACTION_DOWN) || (action == MotionEvent.ACTION_MOVE)) {
             if (action == MotionEvent.ACTION_DOWN) {
                 byte power = (byte) mPower;
                 if (mReverse) {
@@ -168,13 +166,25 @@ public class NXTRemoteControl extends Activity implements OnSharedPreferenceChan
                 }
                 byte l = (byte) (power*lmod);
                 byte r = (byte) (power*rmod);
-                if (!mReverseLR) {
-                    mNXTTalker.motors(l, r, mRegulateSpeed, mSynchronizeMotors);
-                } else {
-                    mNXTTalker.motors(r, l, mRegulateSpeed, mSynchronizeMotors);
+
+                // for upw
+                if (lmod == 0) {
+                    mNXTTalker.motors(r, r, mRegulateSpeed, mSynchronizeMotors);
+                }
+                // left right
+                else if (rmod == 0)
+                {
+                    mNXTTalker.motor(l, mRegulateSpeed, mSynchronizeMotors);
                 }
             } else if ((action == MotionEvent.ACTION_UP) || (action == MotionEvent.ACTION_CANCEL)) {
-                mNXTTalker.motors((byte) 0, (byte) 0, mRegulateSpeed, mSynchronizeMotors);
+                // for upw
+                if (lmod == 0) {
+                    mNXTTalker.motors((byte) 0, (byte) 0, mRegulateSpeed, mSynchronizeMotors);
+                }
+                // left right
+                else if (rmod == 0) {
+                    mNXTTalker.motor((byte) 0, mRegulateSpeed, mSynchronizeMotors);
+                }
             }
             return true;
         }
@@ -345,15 +355,15 @@ public class NXTRemoteControl extends Activity implements OnSharedPreferenceChan
             setContentView(R.layout.main);
 
             updateMenu(R.id.menuitem_buttons);
-            
+
             ImageButton buttonUp = (ImageButton) findViewById(R.id.button_up);
-            buttonUp.setOnTouchListener(new DirectionButtonOnTouchListener(1, 1));
+            buttonUp.setOnTouchListener(new DirectionButtonOnTouchListener(0, -1));
             ImageButton buttonLeft = (ImageButton) findViewById(R.id.button_left);
-            buttonLeft.setOnTouchListener(new DirectionButtonOnTouchListener(-0.6, 0.6));
+            buttonLeft.setOnTouchListener(new DirectionButtonOnTouchListener(0.6, 0));
             ImageButton buttonDown = (ImageButton) findViewById(R.id.button_down);
-            buttonDown.setOnTouchListener(new DirectionButtonOnTouchListener(-1, -1));
+            buttonDown.setOnTouchListener(new DirectionButtonOnTouchListener(0, 1));
             ImageButton buttonRight = (ImageButton) findViewById(R.id.button_right);
-            buttonRight.setOnTouchListener(new DirectionButtonOnTouchListener(0.6, -0.6));
+            buttonRight.setOnTouchListener(new DirectionButtonOnTouchListener(-0.6, 0));
 
             SeekBar powerSeekBar = (SeekBar) findViewById(R.id.power_seekbar);
             powerSeekBar.setProgress(mPower);

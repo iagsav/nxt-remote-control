@@ -165,17 +165,10 @@ public class NXTTalker {
         }
         write(data);
     }
-    
-    public void motor(int motor, byte power, boolean speedReg, boolean motorSync) {
-        byte[] data = { 0x0c, 0x00, (byte) 0x80, 0x04, 0x02, 0x32, 0x07, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00 };
-        
-        //Log.i("NXT", "motor: " + Integer.toString(motor) + ", " + Byte.toString(power));
-        
-        if (motor == 0) {
-            data[4] = 0x02;
-        } else {
-            data[4] = 0x01;
-        }
+
+    public void motor( byte power, boolean speedReg, boolean motorSync) {
+        byte[] data = { 0x0c, 0x00, (byte) 0x80, 0x04, 0x00, 0x32, 0x07, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00 };
+
         data[5] = power;
         if (speedReg) {
             data[7] |= 0x01;
